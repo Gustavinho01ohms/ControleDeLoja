@@ -144,8 +144,6 @@
 
     <script>
         // --- FUNÇÕES AUXILIARES (ESCOPO GLOBAL) ---
-        // A função foi movida para cá, tornando o código mais organizado.
-        // Ela não depende de nenhum elemento da página, então pode ficar aqui.
         function getStatus(product) {
             if (product.stock <= 0) return { text: 'Em Falta', class: 'status-falta' };
             if (product.stock <= product.minStock) return { text: 'Estoque Baixo', class: 'status-baixo' };
@@ -173,7 +171,6 @@
             ];
             let salesHistory = [];
 
-            // Função para renderizar a tabela (continua aqui dentro pois depende de 'tableBody' e 'products')
             function renderTable() {
                 tableBody.innerHTML = '';
                 if (products.length === 0) {
@@ -181,10 +178,9 @@
                     return;
                 }
                 products.forEach(product => {
-                    const status = getStatus(product); // A função agora é chamada do escopo externo
+                    const status = getStatus(product);
                     const row = document.createElement('tr');
                     
-                    // VULNERABILIDADE AQUI: Uso de .innerHTML para inserir o nome do produto.
                     row.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${product.name}</div></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.sku}</td>
@@ -203,8 +199,7 @@
                 });
             }
 
-            // Event Listeners (todos continuam aqui dentro pois dependem das variáveis de elementos)
-            addProductForm.addEventListener('submit', (e). => {
+            addProductForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = document.getElementById('product-name').value;
                 const sku = document.getElementById('product-sku').value;
@@ -230,12 +225,11 @@
                 if (e.target.classList.contains('sell-btn')) {
                     if (products[productIndex].stock > 0) {
                         products[productIndex].stock--;
-                        salesHistory.push({ sku: sku, timestamp: new Date() }); // Registra a venda
+                        salesHistory.push({ sku: sku, timestamp: new Date() });
                     }
                 } else if (e.target.classList.contains('restock-btn')) {
                     products[productIndex].stock++;
                 } else if (e.target.classList.contains('delete-btn')) {
-                    // Prevenção de XSS na caixa de confirmação
                     const productName = new DOMParser().parseFromString(products[productIndex].name, "text/html").documentElement.textContent;
                     if (confirm(`Tem a certeza que deseja excluir o produto ${productName}?`)) {
                         products.splice(productIndex, 1);
