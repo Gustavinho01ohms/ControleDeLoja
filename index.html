@@ -164,11 +164,11 @@
             let salesHistory = [];
 
             // Funções de Lógica
-            function getStatus(product) {
-                if (product.stock <= 0) return { text: 'Em Falta', class: 'status-falta' };
-                if (product.stock <= product.minStock) return { text: 'Estoque Baixo', class: 'status-baixo' };
-                return { text: 'OK', class: 'status-ok' };
-            }
+        function getStatus(product) {
+            if (product.stock <= 0) return { text: 'Em Falta', class: 'status-falta' };
+            if (product.stock <= product.minStock) return { text: 'Estoque Baixo', class: 'status-baixo' };
+            return { text: 'OK', class: 'status-ok' };
+        }
             
             function renderTable() {
                 tableBody.innerHTML = '';
