@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Inteligente - Apresentação do Projeto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        section[id] {
+            scroll-margin-top: 80px;
+        }
+        .status-ok { background-color: #D1FAE5; color: #065F46; }
+        .status-baixo { background-color: #FEF3C7; color: #92400E; }
+        .status-falta { background-color: #FEE2E2; color: #991B1B; }
+        .trend-bar-container {
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .trend-bar {
+            background-color: #4f46e5;
+            height: 1.5rem;
+            border-radius: 0.5rem;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- CABEÇALHO E NAVEGAÇÃO -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold text-indigo-600">GestãoInteligente</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#recursos" class="text-gray-600 hover:text-indigo-600 transition duration-300">Recursos</a>
+                <a href="#como-funciona" class="text-gray-600 hover:text-indigo-600 transition duration-300">Como Funciona</a>
+                <a href="#sobre" class="text-gray-600 hover:text-indigo-600 transition duration-300">O Projeto</a>
+            </div>
+            <a href="#painel" class="hidden md:block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Acessar Painel</a>
+             <!-- Menu Mobile (simples) -->
+            <div class="md:hidden">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- SEÇÃO NOVA: PAINEL DE CONTROLE DE ESTOQUE -->
+        <section id="painel" class="bg-white py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Painel de Controle de Estoque</h2>
+                    <p class="mt-4 text-gray-600">Adicione produtos, simule vendas, gere pedidos e analise tendências.</p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Coluna 1: Adicionar Produto -->
+                    <div class="lg:col-span-1 bg-gray-50 p-8 rounded-2xl shadow-lg h-fit">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Adicionar Novo Produto</h3>
+                        <form id="add-product-form" class="space-y-4">
+                            <div>
+                                <label for="product-name" class="block text-sm font-medium text-gray-700">Nome do Produto</label>
+                                <input type="text" id="product-name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                             <div>
+                                <label for="product-sku" class="block text-sm font-medium text-gray-700">Código (SKU)</label>
+                                <input type="text" id="product-sku" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="initial-stock" class="block text-sm font-medium text-gray-700">Estoque Inicial</label>
+                                <input type="number" id="initial-stock" min="0" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                             <div>
+                                <label for="min-stock" class="block text-sm font-medium text-gray-700">Estoque Mínimo</label>
+                                <input type="number" id="min-stock" min="0" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300">Adicionar Produto</button>
+                        </form>
+                    </div>
+
+                    <!-- Coluna 2: Lista de Produtos e Cards de Análise -->
+                    <div class="lg:col-span-2 space-y-12">
+                        <!-- Card de Estoque Atual -->
+                        <div class="bg-gray-50 p-8 rounded-2xl shadow-lg">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                <h3 class="text-2xl font-bold text-gray-900">Estoque Atual</h3>
+                                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                    <button id="generate-order-btn" class="w-full sm:w-auto bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 flex items-center justify-center gap-2 text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                        Gerar Pedido
+                                    </button>
+                                     <button id="analyze-trends-btn" class="w-full sm:w-auto bg-teal-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-teal-600 transition duration-300 flex items-center justify-center gap-2 text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg>
+                                        Analisar Tendências
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estoque</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Card de Pedido de Compra (inicialmente oculto) -->
+                        <div id="purchase-order-card" class="bg-blue-50 border-l-4 border-blue-500 p-8 rounded-2xl shadow-lg hidden">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-6">Sugestão de Pedido de Compra</h3>
+                            <ul id="purchase-order-list" class="space-y-3 text-gray-700"></ul>
+                        </div>
+                        
+                        <!-- Card de Análise de Tendências (inicialmente oculto) -->
+                        <div id="sales-trends-card" class="bg-teal-50 border-l-4 border-teal-500 p-8 rounded-2xl shadow-lg hidden">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-6">Análise de Tendências de Vendas</h3>
+                            <div id="trends-content" class="space-y-6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 1: PÁGINA INICIAL (HOME) -->
+        <section id="home" class="container mx-auto px-6 py-24 text-center">
+            <!-- Conteúdo existente -->
+        </section>
+
+        <!-- SEÇÃO 2: RECURSOS (FEATURES) -->
+        <section id="recursos" class="bg-white py-24">
+            <!-- Conteúdo existente -->
+        </section>
+
+        <!-- SEÇÃO 3: COMO FUNCIONA -->
+        <section id="como-funciona" class="py-24">
+            <!-- Conteúdo existente -->
+        </section>
+
+        <!-- SEÇÃO 4: SOBRE O PROJETO -->
+        <section id="sobre" class="bg-white py-24">
+             <!-- Conteúdo existente -->
+        </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-gray-800 text-white">
+        <!-- Conteúdo existente -->
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // IDs dos Elementos
+            const addProductForm = document.getElementById('add-product-form');
+            const tableBody = document.getElementById('inventory-table-body');
+            const generateOrderBtn = document.getElementById('generate-order-btn');
+            const purchaseOrderCard = document.getElementById('purchase-order-card');
+            const purchaseOrderList = document.getElementById('purchase-order-list');
+            const analyzeTrendsBtn = document.getElementById('analyze-trends-btn');
+            const salesTrendsCard = document.getElementById('sales-trends-card');
+            const trendsContent = document.getElementById('trends-content');
+
+            // Simulação de Banco de Dados
+            let products = [
+                { name: 'Refrigerante 2L', sku: 'REF-001', stock: 24, minStock: 10 },
+                { name: 'Salgadinho 100g', sku: 'SAL-003', stock: 8, minStock: 15 },
+                { name: 'Barra de Chocolate', sku: 'CHO-002', stock: 40, minStock: 20 },
+                { name: 'Água Mineral 500ml', sku: 'AGU-001', stock: 0, minStock: 12 },
+            ];
+            let salesHistory = [];
+
+            // Funções de Lógica
+            function getStatus(product) {
+                if (product.stock <= 0) return { text: 'Em Falta', class: 'status-falta' };
+                if (product.stock <= product.minStock) return { text: 'Estoque Baixo', class: 'status-baixo' };
+                return { text: 'OK', class: 'status-ok' };
+            }
+            
+            function renderTable() {
+                tableBody.innerHTML = '';
+                if(products.length === 0){
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-gray-500">Nenhum produto cadastrado.</td></tr>`;
+                    return;
+                }
+                products.forEach(product => {
+                    const status = getStatus(product);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${product.name}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.sku}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 font-bold">${product.stock} un.</div>
+                            <div class="text-xs text-gray-500">Mínimo: ${product.minStock}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${status.class}">${status.text}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button data-sku="${product.sku}" class="sell-btn w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600">-</button>
+                            <button data-sku="${product.sku}" class="restock-btn w-8 h-8 bg-green-500 text-white rounded-full hover:bg-green-600">+</button>
+                            <button data-sku="${product.sku}" class="delete-btn text-gray-400 hover:text-red-600">&#128465;</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Event Listeners
+            addProductForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('product-name').value;
+                const sku = document.getElementById('product-sku').value;
+                const stock = parseInt(document.getElementById('initial-stock').value);
+                const minStock = parseInt(document.getElementById('min-stock').value);
+
+                if (products.some(p => p.sku === sku)) {
+                    alert('Erro: Já existe um produto com este código (SKU).');
+                    return;
+                }
+                products.push({ name, sku, stock, minStock });
+                renderTable();
+                addProductForm.reset();
+            });
+
+            tableBody.addEventListener('click', (e) => {
+                const sku = e.target.dataset.sku;
+                if (!sku) return;
+                
+                const productIndex = products.findIndex(p => p.sku === sku);
+                if (productIndex === -1) return;
+
+                if (e.target.classList.contains('sell-btn')) {
+                    if (products[productIndex].stock > 0) {
+                        products[productIndex].stock--;
+                        salesHistory.push({ sku: sku, timestamp: new Date() }); // Registra a venda
+                    }
+                } else if (e.target.classList.contains('restock-btn')) {
+                    products[productIndex].stock++;
+                } else if (e.target.classList.contains('delete-btn')) {
+                    if (confirm(`Tem a certeza que deseja excluir o produto ${products[productIndex].name}?`)) {
+                        products.splice(productIndex, 1);
+                    }
+                }
+                renderTable();
+            });
+
+            generateOrderBtn.addEventListener('click', () => {
+                salesTrendsCard.classList.add('hidden'); // Oculta o card de tendências
+                const lowStockProducts = products.filter(p => p.stock <= p.minStock);
+                purchaseOrderList.innerHTML = '';
+
+                if (lowStockProducts.length === 0) {
+                    purchaseOrderList.innerHTML = `<li class="text-green-700 font-medium">Parabéns! Todos os produtos estão com o estoque em dia.</li>`;
+                } else {
+                    let itemsToOrder = 0;
+                    lowStockProducts.forEach(product => {
+                        const targetStock = product.minStock * 2;
+                        const quantityToOrder = Math.max(0, targetStock - product.stock);
+
+                        if (quantityToOrder > 0) {
+                            itemsToOrder++;
+                            const listItem = document.createElement('li');
+                            listItem.className = 'p-3 bg-white rounded-md shadow-sm flex justify-between items-center';
+                            listItem.innerHTML = `
+                                <span>
+                                    <span class="font-bold text-gray-800">${product.name}</span>
+                                    <span class="text-sm text-gray-500 block">Estoque atual: ${product.stock}</span>
+                                </span>
+                                <span class="font-bold text-indigo-600 text-lg">Pedir ${quantityToOrder} un.</span>
+                            `;
+                            purchaseOrderList.appendChild(listItem);
+                        }
+                    });
+                    if (itemsToOrder === 0) {
+                        purchaseOrderList.innerHTML = `<li class="text-green-700 font-medium">Parabéns! Todos os produtos estão com o estoque em dia.</li>`;
+                    }
+                }
+                purchaseOrderCard.classList.remove('hidden');
+            });
+            
+            analyzeTrendsBtn.addEventListener('click', () => {
+                purchaseOrderCard.classList.add('hidden'); // Oculta o card de pedido
+                trendsContent.innerHTML = '';
+                
+                if (salesHistory.length === 0) {
+                    trendsContent.innerHTML = `<p class="text-gray-600">Nenhuma venda foi registada ainda. Simule algumas vendas clicando no botão '-' nos produtos.</p>`;
+                    salesTrendsCard.classList.remove('hidden');
+                    return;
+                }
+
+                // 1. Análise de Produtos Mais Vendidos
+                const salesBySku = salesHistory.reduce((acc, sale) => {
+                    acc[sale.sku] = (acc[sale.sku] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const sortedProducts = Object.entries(salesBySku)
+                    .map(([sku, count]) => ({
+                        sku,
+                        name: products.find(p => p.sku === sku)?.name || 'Produto Desconhecido',
+                        count
+                    }))
+                    .sort((a, b) => b.count - a.count);
+
+                // 2. Análise de Horário de Pico
+                const salesByHour = salesHistory.reduce((acc, sale) => {
+                    const hour = sale.timestamp.getHours();
+                    acc[hour] = (acc[hour] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const peakHour = Object.entries(salesByHour).sort((a, b) => b[1] - a[1])[0][0];
+
+                // Renderizar Análise
+                const totalSales = salesHistory.length;
+                trendsContent.innerHTML = `
+                    <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <h4 class="font-bold text-lg">Produto Mais Vendido</h4>
+                        <p class="text-indigo-600 text-2xl font-bold">${sortedProducts[0].name}</p>
+                        <p class="text-gray-500 text-sm">${sortedProducts[0].count} de ${totalSales} vendas totais.</p>
+                    </div>
+                     <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <h4 class="font-bold text-lg">Horário de Pico de Vendas</h4>
+                        <p class="text-indigo-600 text-2xl font-bold">${peakHour}:00 - ${parseInt(peakHour)+1}:00</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">Top 3 Produtos</h4>
+                        <div class="space-y-3">
+                            ${sortedProducts.slice(0, 3).map(p => `
+                                <div>
+                                    <div class="flex justify-between items-center mb-1 text-sm">
+                                        <span class="font-medium">${p.name}</span>
+                                        <span class="text-gray-600">${p.count} vendas</span>
+                                    </div>
+                                    <div class="trend-bar-container">
+                                        <div class="trend-bar" style="width: ${(p.count / sortedProducts[0].count) * 100}%"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                salesTrendsCard.classList.remove('hidden');
+            });
+
+            // Renderização Inicial
+            renderTable();
+        });
+    </script>
+
+</body>
+</html>
+
