@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de Notícias (NewsData.io)</title>
+    <style>
+        /* Os mesmos estilos de antes */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        #noticias {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .artigo {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .artigo:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .artigo h2 {
+            margin-top: 0;
+            font-size: 1.25em;
+        }
+        .artigo a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        .artigo a:hover {
+            text-decoration: underline;
+        }
+        .artigo p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+        .artigo span {
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Últimas Notícias do Brasil (via NewsData.io)</h1>
+    
+    <div id="noticias">
+        <p>Carregando notícias...</p>
+    </div>
+
+    <script>
+        // *** SEU NOVO CÓDIGO AQUI ***
+        
+        // URL da API newsdata.io para as últimas notícias do Brasil em português
+        var url = 'https://newsdata.io/api/1/news?' +
+                  'apikey=pub_eafba88c3b724226a2b090a3c1372b50&' +
+                  'country=br&' +     // <-- Notícias DO Brasil
+                  'language=pt';      // <-- Em Português
+                  // 'q=tecnologia&' + // Você também pode adicionar um 'q' para filtrar por termo
+
+        // *** ATENÇÃO: A newsdata.io não usa 'new Request()' da mesma forma ***
+        // É mais simples e seguro fazer o fetch direto com a string da URL
+        
+        var noticiasContainer = document.getElementById('noticias');
+
+        // Usando o fetch para buscar os dados
+        fetch(url) // <-- Faz o fetch direto com a URL
+            .then(function(response) {
+                // 1. Converte a resposta para JSON
+                return response.json();
+            })
+            .then(function(dados) {
+                // 2. 'dados' contém o objeto JSON
+                console.log(dados); // Verifique a estrutura no console
+                
+                noticiasContainer.innerHTML = ''; 
+
+                // *** MUDANÇA IMPORTANTE AQUI ***
+                // A API retorna 'success' e 'results' (em vez de 'ok' e 'articles')
+                if (dados.status === 'success' && dados.results.length > 0) {
+                    
+                    // *** MUDANÇA IMPORTANTE AQUI ***
+                    // Iteramos sobre 'dados.results'
+                    dados.results.forEach(function(artigo) {
+                        
+                        var divArtigo = document.createElement('div');
+                        divArtigo.className = 'artigo';
+                        var artigoImage = document.createElement('img');
+                        artigoImage.src = artigo.image_url
+                        artigoImage.alt = artigo.title;
+                        
+                        var titulo = document.createElement('h2');
+                        var link = document.createElement('a');
+                        
+                        // *** MUDANÇA IMPORTANTE AQUI ***
+                        // O campo é 'link', não 'url'
+                        link.href = artigo.link; 
+                        link.textContent = artigo.title;
+                        link.target = '_blank'; 
+                        
+                        var fonte = document.createElement('span');
+                        // O campo é 'source_id' (o 'name' está dentro de 'source')
+                        fonte.textContent = "Fonte: " + artigo.source_id;
+
+                        var descricao = document.createElement('p');
+                        // O campo é 'description' (pode vir nulo 'null')
+                        descricao.textContent = artigo.description || 'Descrição não disponível.'; 
+                        
+                        titulo.appendChild(link);
+                        divArtigo.appendChild(titulo);
+                        divArtigo.appendChild(fonte); // Adicionando a fonte
+                        //divArtigo.appendChild(descricao);
+                        noticiasContainer.appendChild(divArtigo);
+                        divArtigo.appendChild(artigoImage);
+                        artigoImage.style.maxWidth = '100%';
+                        artigoImage.style.height = 'auto';
+                    });
+
+                } else if (dados.results.length === 0) {
+                    noticiasContainer.innerHTML = '<p>Nenhuma notícia encontrada.</p>';
+                } else {
+                    noticiasContainer.innerHTML = '<p>Erro ao buscar notícias: ' + (dados.message || 'Erro desconhecido') + '</p>';
+                }
+            })
+            .catch(function(error) {
+                console.error('Erro na requisição:', error);
+                noticiasContainer.innerHTML = '<p>Houve um problema ao conectar com a API de notícias.</p>';
+            });
+
+    </script>
+
+</body>
+</html>
